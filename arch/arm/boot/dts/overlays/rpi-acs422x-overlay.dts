@@ -1,0 +1,63 @@
+// Definitions for Tempo Semiconductor acs422x 
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2708";
+
+	fragment@0 {
+		target = <&cprman>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&gpio>;
+		__overlay__ {
+			gpclk1_pins: gpclk1_pins {
+				brcm,pins = <5>;
+				brcm,function = <4>;
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&i2c1>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+
+			codec: acs422x@69 {
+				#sound-dai-cells = <0>;
+				compatible = "acs,acs422x";
+				reg = <0x69>;
+				status = "okay";
+				mclk-src = "mclk";	
+				mclk-src-freq = <25000000>;
+				clocks = <&cprman 39>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&gpclk1_pins>;
+			};
+
+		};
+	};
+
+	fragment@3 {
+		target = <&i2s>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@4 {
+		target = <&sound>;
+		__overlay__ {
+			compatible = "rpi-acs,rpi-acs422x";
+			i2s-controller = <&i2s>;
+			audio-codec = <&codec>;
+			status = "okay";
+		};
+	};
+};
